@@ -64,7 +64,7 @@ const CreatePostWizard = () => {
       void ctx.posts.getAll.invalidate();
     }
   });
-  console.log(user)
+  
   if(!user) return null;
 
   return(
