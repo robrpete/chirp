@@ -1,6 +1,7 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
+import { useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { type NextPage } from "next";
@@ -14,7 +15,7 @@ const Feed = () => {
 
   if(postsLoading) return <LoadingPage/>;
 
-  if(!data) return <div>Something went wrong!</div>
+  if(!data) return <div>Something went wrong getting data!</div>
 
   return(
     <div>
@@ -55,6 +56,14 @@ export default Home;
 
 const CreatePostWizard = () => {
   const { user } = useUser();
+  const [input, setInput] = useState("");
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.posts.getAll.invalidate();
+    }
+  });
   console.log(user)
   if(!user) return null;
 
@@ -69,7 +78,11 @@ const CreatePostWizard = () => {
         <input 
           type="text" 
           placeholder="Type some emojis!"
-          className="bg-transparent grow outline-none"/>
+          className="bg-transparent grow outline-none"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          disabled={isPosting}/>
+          <button onClick={() => mutate({ content: input })}>Post</button>
     </div>
   )
 }
