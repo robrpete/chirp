@@ -7,7 +7,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { LoadingPage } from "~/components/loading";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { toast } from "react-hot-toast";
 dayjs.extend(relativeTime);
 
 const Feed = () => {
@@ -62,13 +63,21 @@ const CreatePostWizard = () => {
     onSuccess: () => {
       setInput("");
       void ctx.posts.getAll.invalidate();
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if(errorMessage && errorMessage[0]){
+        toast.error(errorMessage[0])
+      } else {
+        toast.error("Failed to post! Post only Emojis!")
+      }
     }
   });
   
   if(!user) return null;
 
   return(
-    <div className="flex gap-3 w-full">
+    <div className="flex items-center gap-3 w-full">
       <Image 
         src={user.profileImageUrl}
         height={54}
@@ -81,8 +90,25 @@ const CreatePostWizard = () => {
           className="bg-transparent grow outline-none"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if(e.key === "Enter"){
+              e.preventDefault();
+              if(input !== ""){
+                mutate({ content: input });
+              }
+            }
+          }}
           disabled={isPosting}/>
-          <button onClick={() => mutate({ content: input })}>Post</button>
+          
+          {input !== "" && !isPosting && 
+            <button 
+            className="bg-[#1D9BF0] h-fit py-2 px-8 rounded-full"
+            onClick={() => mutate({ content: input })}
+            disabled={isPosting}>
+              Post
+          </button>}
+
+          {isPosting && (<div className="mr-8"><LoadingSpinner size={20}/></div>)}
     </div>
   )
 }
