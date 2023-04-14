@@ -7,9 +7,11 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { toast } from "react-hot-toast";
 dayjs.extend(relativeTime);
+//react-hook-form
 
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
@@ -130,10 +132,10 @@ const PostView = (props: PostWithUser) => {
           className="rounded-full"/>
         <div className="flex flex-col">
           <div className="flex gap-1 text-slate-400">
-            <span className="text-slate-200">{author.username}</span>
+            <Link href={`/@${author.username}`}><span className="text-slate-200">{author.username}</span></Link>
             <span>{`@${author.username}`}</span>
             ·
-            <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
+            <Link href={`/post/${post.id}`}><span>{`${dayjs(post.createdAt).fromNow()}`}</span></Link>
           </div>
           <span>{post.content}</span>
         </div>
