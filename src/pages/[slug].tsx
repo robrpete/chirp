@@ -1,6 +1,6 @@
 import type { GetStaticProps, NextPage } from "next";
 import { api } from "~/utils/api";
-import Image from "next/Image";
+import Image from "next/image";
 import Head from "next/head";
 
 const ProfilePage: NextPage<{ username: string}> = ({ username }) => {
