@@ -1,12 +1,10 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { PageLayout } from "~/components/layout";
-import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postView";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import type { GetStaticProps } from "next";
 import { api } from "~/utils/api";
-import Image from "next/image";
 
 const SinglePostPage: NextPage<{id: string }> = ({ id }) => {
   const { data } = api.posts.getPostById.useQuery({ id });
@@ -34,8 +32,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const id = context.params?.id;
 
   if (typeof id !== "string") throw new Error("no slug");
-
-  const username = id.replace("@", "");
 
   await ssg.posts.getPostById.prefetch({ id });
 
